@@ -4,7 +4,9 @@
              :expand-on-click-node="false"
              show-checkbox
              node-key="catId"
-             :default-expanded-keys="expandedKey">
+             :default-expanded-keys="expandedKey"
+             draggable
+             :allow-drop="allowDrop">
     <span class="custom-tree-node" slot-scope="{ node, data }">
         <span>{{ node.label }}</span>
         <span>
@@ -59,6 +61,7 @@
       return {
         category: {name: "", parentCid: 0, catLevel: 0, showStatus: 1, sort: 0, catId: null, productUnit: "", icon: ""},
         title: "",
+        maxLevel: 0,
         dialogType: "",//edit,add
         menus: [],
         expandedKey: [],
@@ -179,6 +182,29 @@
         }).catch(() => {
           this.$message.error('菜单删除失败');
         });
+      },
+      allowDrop(draggingNode, dropNode, type) {
+        //判断当前被拖动节点以及所在的父节点总层数不能大于3
+        //1.获取当前被拖动节点的总层数
+        this.countNodeLevel(draggingNode.data);
+        //当前正在拖动的节点+所在父节点的深度的和不大于3即可
+        let deep = this.maxLevel - draggingNode.data.catLevel + 1;
+        if (type == "inner") {
+          return (deep + dropNode.level) <= 3;
+        } else {
+          return (deep + dropNode.parent.level) <= 3;
+        }
+      },
+      countNodeLevel(node) {
+        //找到所有子节点，求出最大深度
+        if (node.children != null && node.children.length > 0) {
+          for (let i = 0; i < node.children.length; i++) {
+            if (node.children[i].catLevel > this.maxLevel) {
+              this.maxLevel = node.children[i].catLevel;
+            }
+            this.countNodeLevel(node.children[i]);
+          }
+        }
       },
     },
     created() {
