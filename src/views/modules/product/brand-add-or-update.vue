@@ -41,7 +41,7 @@ import SingleUpload from "@/components/upload/singleUpload.vue"
 
 export default {
   components: {SingleUpload},
-  data() {
+  data () {
     return {
       visible: false,
       dataForm: {
@@ -76,7 +76,7 @@ export default {
     }
   },
   methods: {
-    init(id) {
+    init (id) {
       this.dataForm.brandId = id || 0
       this.visible = true
       this.$nextTick(() => {
@@ -100,7 +100,7 @@ export default {
       })
     },
     // 表单提交
-    dataFormSubmit() {
+    dataFormSubmit () {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           this.$http({
